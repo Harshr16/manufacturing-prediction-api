@@ -18,7 +18,7 @@ def upload_data():
     global dataset
     file = request.files.get('file')
     if file:
-        # Read CSV file into a pandas DataFrame
+        # Read CSV file
         dataset = pd.read_csv(file)
         return jsonify({"message": "Data uploaded successfully"}), 200
     else:
@@ -35,7 +35,7 @@ def train_model():
     X = dataset[['Temperature', 'Run_Time']]  # Features
     y = dataset['Downtime_Flag']  # Target variable
 
-    # Splitting dataset into training and testing sets
+    # Splitting dataset into training and testing set
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     # Initialize and train the model (Logistic Regression)
@@ -78,21 +78,21 @@ def predict():
         "Confidence": confidence
     }), 200
 
-# Generate a synthetic dataset with better correlation for Logistic Regression
+# Generate a synthetic dataset
 def generate_synthetic_data():
     np.random.seed(42)
     num_samples = 1000
 
-    # Generate synthetic data with better patterns for Logistic Regression
+    
     machine_ids = np.random.choice([f'M{str(i)}' for i in range(1, 11)], num_samples)
     temperatures = np.random.uniform(70, 120, num_samples)
     run_times = np.random.uniform(30, 300, num_samples)
     
-    # Downtime depends on temperature and run_time with a clearer linear relationship
+    # Downtime depends on temperature and run_time 
     downtime_flags = np.array([1 if temp > 95 and run_time > 150 else 0 
                                for temp, run_time in zip(temperatures, run_times)])
 
-    # Add some noise to the data for variability (10-15% noise)
+    # Adding some noise to data for variability (10-15% noise)
     noise = np.random.choice([0, 1], num_samples, p=[0.9, 0.1])
     downtime_flags = np.clip(downtime_flags + noise, 0, 1)  # Ensure flags are binary
 
@@ -104,13 +104,13 @@ def generate_synthetic_data():
         'Downtime_Flag': downtime_flags
     })
 
-    # Save it to a CSV file
+    # Saves it to a CSV file
     data.to_csv('synthetic_manufacturing_data.csv', index=False)
     return data
 
 if __name__ == '__main__':
-    # Generate synthetic data and save it
+    # Generates synthetic data and saves it
     generate_synthetic_data()
 
-    # Run the Flask app
+    # Run Flask app
     app.run(debug=True)
